@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Panel Interno — Planilla Naranja 🍊</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --o:#FF6200;--o2:#FF8C38;--o3:#FFB270;
+  --dark:#0a0500;--dark2:#111;--mid:#1a1000;
+  --border:rgba(255,98,0,0.15);--border2:rgba(255,255,255,0.08);
+  --white:#FFFCF7;--muted:rgba(255,252,247,0.45);
+}
+html{scroll-behavior:smooth;}
+body{font-family:'DM Sans',sans-serif;background:var(--dark);color:var(--white);min-height:100vh;}
+
+/* LAYOUT */
+.app{display:flex;height:100vh;overflow:hidden;}
+.sidebar{
+  width:220px;flex-shrink:0;
+  background:var(--dark2);
+  border-right:1px solid var(--border);
+  display:flex;flex-direction:column;
+  padding:1.5rem 0;
+  overflow-y:auto;
+}
+.main{flex:1;overflow-y:auto;padding:2.5rem 2.5rem;}
+
+.sidebar-brand{
+  padding:0 1.2rem 1.5rem;
+  border-bottom:1px solid var(--border);
+  margin-bottom:1rem;
+}
+.brand-name{font-family:'Syne',sans-serif;font-size:1rem;font-weight:800;color:var(--o);letter-spacing:1px;}
+.brand-sub{font-size:0.65rem;color:var(--muted);letter-spacing:0.5px;margin-top:2px;}
+
+.sidebar-section{padding:0.5rem 0.8rem;font-size:0.6rem;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:rgba(255,98,0,0.5);margin-top:0.5rem;}
+.nav-item{
+  display:flex;align-items:center;gap:0.7rem;
+  padding:0.6rem 1.2rem;margin:1px 0.5rem;border-radius:8px;
+  font-size:0.82rem;font-weight:500;color:var(--muted);
+  cursor:pointer;transition:all 0.15s;text-decoration:none;
+}
+.nav-item:hover{background:rgba(255,98,0,0.08);color:var(--white);}
+.nav-item.active{background:rgba(255,98,0,0.12);color:var(--o);font-weight:600;}
+.nav-icon{font-size:1rem;width:20px;text-align:center;}
+.nav-badge{
+  margin-left:auto;background:var(--o);color:var(--dark);
+  font-size:0.6rem;font-weight:800;padding:1px 6px;border-radius:100px;
+}
+
+/* SECTIONS */
+.tab{display:none;}.tab.active{display:block;}
+h2{font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:800;margin-bottom:0.3rem;}
+.page-sub{font-size:0.82rem;color:var(--muted);margin-bottom:2rem;}
+
+/* CARDS */
+.card{background:var(--mid);border:1px solid var(--border);border-radius:14px;padding:1.4rem;margin-bottom:1rem;}
+.card-title{font-family:'Syne',sans-serif;font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--o);margin-bottom:1rem;display:flex;align-items:center;justify-content:space-between;gap:0.5rem;}
+.card-title span{display:flex;align-items:center;gap:0.5rem;}
+
+/* BUTTONS */
+.btn{
+  display:inline-flex;align-items:center;gap:0.4rem;
+  padding:0.45rem 1rem;border-radius:8px;border:none;
+  font-family:'DM Sans',sans-serif;font-size:0.78rem;font-weight:600;
+  cursor:pointer;transition:all 0.15s;
+}
+.btn-orange{background:var(--o);color:var(--dark);}
+.btn-orange:hover{background:var(--o2);}
+.btn-ghost{background:rgba(255,255,255,0.06);color:var(--white);border:1px solid var(--border2);}
+.btn-ghost:hover{background:rgba(255,255,255,0.1);}
+.btn-danger{background:rgba(220,53,69,0.12);color:#ff6b6b;border:1px solid rgba(220,53,69,0.2);}
+.btn-danger:hover{background:rgba(220,53,69,0.2);}
+.btn-sm{padding:0.3rem 0.7rem;font-size:0.72rem;}
+
+/* INPUTS */
+input[type=text],input[type=number],textarea,select{
+  background:rgba(255,255,255,0.04);border:1px solid var(--border2);
+  border-radius:8px;color:var(--white);font-family:'DM Sans',sans-serif;
+  font-size:0.85rem;padding:0.55rem 0.9rem;width:100%;
+  transition:border-color 0.2s;outline:none;
+}
+input[type=text]:focus,input[type=number]:focus,textarea:focus,select:focus{border-color:var(--o);}
+textarea{resize:vertical;min-height:80px;line-height:1.5;}
+select option{background:#1a1000;}
+.form-row{display:grid;gap:0.8rem;margin-bottom:0.8rem;}
+.form-row.cols2{grid-template-columns:1fr 1fr;}
+.form-row.cols3{grid-template-columns:1fr 1fr 1fr;}
+label{font-size:0.72rem;font-weight:600;color:var(--muted);margin-bottom:0.3rem;display:block;text-transform:uppercase;letter-spacing:0.5px;}
+
+/* TIMELINE TASKS */
+.timeline-item{
+  background:rgba(255,255,255,0.03);border:1px solid var(--border2);
+  border-radius:12px;padding:1rem 1.2rem;margin-bottom:0.7rem;
+  transition:border-color 0.2s;position:relative;
+}
+.timeline-item.done{opacity:0.5;}
+.timeline-header{display:flex;align-items:flex-start;gap:0.8rem;}
+.tl-check{
+  width:20px;height:20px;border-radius:6px;border:2px solid rgba(255,98,0,0.4);
+  flex-shrink:0;cursor:pointer;background:transparent;
+  display:flex;align-items:center;justify-content:center;
+  transition:all 0.2s;margin-top:1px;
+}
+.tl-check.checked{background:var(--o);border-color:var(--o);}
+.tl-check.checked::after{content:'✓';color:var(--dark);font-size:12px;font-weight:700;}
+.tl-info{flex:1;}
+.tl-date-badge{
+  display:inline-block;font-size:0.65rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;
+  color:var(--o);background:rgba(255,98,0,0.1);padding:2px 7px;border-radius:100px;
+  margin-bottom:0.3rem;
+}
+.tl-name{font-size:0.9rem;font-weight:600;}
+.tl-desc{font-size:0.78rem;color:var(--muted);margin-top:0.2rem;line-height:1.5;}
+.tl-chips{display:flex;flex-wrap:wrap;gap:0.3rem;margin-top:0.6rem;}
+.chip{background:rgba(255,255,255,0.06);border:1px solid var(--border2);color:var(--muted);font-size:0.65rem;font-weight:600;padding:2px 7px;border-radius:100px;letter-spacing:0.3px;}
+.tl-actions{display:flex;gap:0.4rem;margin-top:0.6rem;}
+.priority-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:6px;}
+.p-alta{background:#ff6b6b;}
+.p-media{background:#F4C430;}
+.p-baja{background:#5DD88A;}
+
+/* BUDGET */
+.budget-row{
+  display:grid;grid-template-columns:1fr auto auto auto auto;
+  gap:0.8rem;align-items:center;
+  padding:0.8rem 1rem;border-radius:10px;
+  background:rgba(255,255,255,0.03);border:1px solid var(--border2);
+  margin-bottom:0.5rem;transition:background 0.15s;
+}
+.budget-row:hover{background:rgba(255,98,0,0.04);}
+.budget-concept{font-size:0.85rem;font-weight:500;}
+.budget-amount{font-size:0.85rem;font-weight:700;color:var(--o2);white-space:nowrap;}
+.budget-status select{font-size:0.72rem;padding:0.25rem 0.5rem;background:rgba(255,255,255,0.04);}
+.total-bar{
+  background:rgba(255,98,0,0.08);border:1px solid rgba(255,98,0,0.2);
+  border-radius:12px;padding:1.2rem 1.5rem;
+  display:flex;justify-content:space-between;align-items:center;margin-top:1rem;
+}
+.total-amount{font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;color:var(--o);}
+.total-breakdown{font-size:0.75rem;color:var(--muted);}
+
+/* PROPOSALS */
+.prop-item{
+  background:rgba(255,255,255,0.03);border:1px solid var(--border2);
+  border-radius:12px;margin-bottom:0.7rem;overflow:hidden;
+}
+.prop-head{
+  display:flex;align-items:center;gap:0.8rem;
+  padding:0.9rem 1rem;cursor:pointer;
+  transition:background 0.15s;
+}
+.prop-head:hover{background:rgba(255,98,0,0.04);}
+.prop-expand{font-size:0.7rem;margin-left:auto;color:var(--muted);transition:transform 0.2s;}
+.prop-item.expanded .prop-expand{transform:rotate(180deg);}
+.prop-body{display:none;padding:0 1rem 1rem;border-top:1px solid var(--border2);}
+.prop-item.expanded .prop-body{display:block;}
+.prop-vib{display:flex;align-items:center;gap:0.5rem;margin-top:0.5rem;}
+.vib-bar{flex:1;height:4px;background:rgba(255,255,255,0.08);border-radius:2px;overflow:hidden;}
+.vib-fill{height:100%;border-radius:2px;}
+
+/* NOTES */
+.note-item{
+  background:rgba(255,255,255,0.03);border:1px solid var(--border2);
+  border-radius:12px;padding:1rem;margin-bottom:0.6rem;
+  position:relative;
+}
+.note-meta{font-size:0.65rem;color:var(--muted);margin-bottom:0.4rem;display:flex;gap:0.8rem;}
+.note-tag{background:rgba(255,98,0,0.1);color:var(--o2);border:1px solid rgba(255,98,0,0.2);font-size:0.6rem;font-weight:600;padding:1px 6px;border-radius:100px;text-transform:uppercase;}
+.note-text{font-size:0.85rem;line-height:1.6;color:rgba(255,252,247,0.85);}
+.note-del{position:absolute;top:0.7rem;right:0.7rem;background:none;border:none;color:var(--muted);cursor:pointer;font-size:1rem;opacity:0;transition:opacity 0.2s;}
+.note-item:hover .note-del{opacity:1;}
+
+/* PROGRESS OVERVIEW */
+.progress-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:2rem;}
+.progress-card{background:var(--mid);border:1px solid var(--border);border-radius:12px;padding:1.2rem;text-align:center;}
+.progress-num{font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;}
+.progress-num.green{color:#5DD88A;}
+.progress-num.orange{color:var(--o);}
+.progress-num.yellow{color:#F4C430;}
+.progress-num.red{color:#ff6b6b;}
+.progress-label{font-size:0.7rem;color:var(--muted);margin-top:0.2rem;text-transform:uppercase;letter-spacing:0.5px;}
+
+/* MODAL */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:100;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.2s;}
+.modal-bg.open{opacity:1;pointer-events:all;}
+.modal-box{background:#1a1000;border:1px solid var(--border);border-radius:16px;padding:1.8rem;width:min(460px,95vw);max-height:90vh;overflow-y:auto;}
+.modal-title{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:800;margin-bottom:1.2rem;display:flex;justify-content:space-between;align-items:center;}
+.modal-close-btn{background:none;border:none;color:var(--muted);font-size:1.4rem;cursor:pointer;transition:color 0.2s;}
+.modal-close-btn:hover{color:var(--white);}
+
+@media(max-width:768px){
+  .sidebar{width:60px;}
+  .sidebar .brand-sub,.sidebar .sidebar-section,.nav-item span{display:none;}
+  .nav-item{justify-content:center;padding:0.6rem;}
+  .nav-icon{width:auto;}
+  .main{padding:1.5rem;}
+  .progress-grid{grid-template-columns:repeat(2,1fr);}
+  .form-row.cols2,.form-row.cols3{grid-template-columns:1fr;}
+  .budget-row{grid-template-columns:1fr auto auto;}
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-name">🍊 NARANJA</div>
+    <div class="brand-sub">Panel Interno · Equipo</div>
+  </div>
+  <div class="sidebar-section">Navegación</div>
+  <div class="nav-item active" onclick="showTab('resumen',this)"><span class="nav-icon">📊</span><span>Resumen</span></div>
+  <div class="nav-item" onclick="showTab('cronograma',this)"><span class="nav-icon">📅</span><span>Cronograma</span><span class="nav-badge" id="pendBadge">5</span></div>
+  <div class="nav-item" onclick="showTab('presupuesto',this)"><span class="nav-icon">💰</span><span>Presupuesto</span></div>
+  <div class="nav-item" onclick="showTab('propuestas',this)"><span class="nav-icon">💡</span><span>Propuestas</span></div>
+  <div class="nav-item" onclick="showTab('notas',this)"><span class="nav-icon">📝</span><span>Ideas & Notas</span></div>
+</nav>
+
+<!-- MAIN -->
+<div class="main">
+
+<!-- RESUMEN -->
+<div class="tab active" id="tab-resumen">
+  <h2>Buenos días, equipo 🍊</h2>
+  <p class="page-sub">Resumen general de campaña · Actualizado en tiempo real</p>
+
+  <div class="progress-grid">
+    <div class="progress-card"><div class="progress-num green" id="stat-done">0</div><div class="progress-label">Tareas completadas</div></div>
+    <div class="progress-card"><div class="progress-num orange" id="stat-pend">0</div><div class="progress-label">Pendientes</div></div>
+    <div class="progress-card"><div class="progress-num yellow" id="stat-budget">$0</div><div class="progress-label">Presupuesto usado</div></div>
+    <div class="progress-card"><div class="progress-num red" id="stat-days">35</div><div class="progress-label">Días hasta votaciones</div></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span>⏰ Próximas actividades</span></div>
+    <div id="resumen-proximas"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span>💡 Ideas recientes del equipo</span></div>
+    <div id="resumen-notas" style="font-size:0.82rem;color:var(--muted)">Sin notas aún.</div>
+  </div>
+</div>
+
+<!-- CRONOGRAMA -->
+<div class="tab" id="tab-cronograma">
+  <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:1rem;margin-bottom:2rem">
+    <div>
+      <h2>Cronograma</h2>
+      <p class="page-sub" style="margin:0">Tareas de campaña · Haz click en ✓ para marcar como hecha</p>
+    </div>
+    <button class="btn btn-orange" onclick="openTaskModal()">+ Agregar tarea</button>
+  </div>
+  <div id="tasks-list"></div>
+</div>
+
+<!-- PRESUPUESTO -->
+<div class="tab" id="tab-presupuesto">
+  <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:1rem;margin-bottom:2rem">
+    <div>
+      <h2>Presupuesto</h2>
+      <p class="page-sub" style="margin:0">Todos los gastos de campaña · Sofía coordina esto 💰</p>
+    </div>
+    <button class="btn btn-orange" onclick="openBudgetModal()">+ Agregar gasto</button>
+  </div>
+  <div id="budget-list"></div>
+  <div class="total-bar">
+    <div>
+      <div style="font-size:0.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:0.3rem">Total presupuestado</div>
+      <div class="total-breakdown" id="budget-breakdown"></div>
+    </div>
+    <div class="total-amount" id="budget-total">$0</div>
+  </div>
+</div>
+
+<!-- PROPUESTAS -->
+<div class="tab" id="tab-propuestas">
+  <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:1rem;margin-bottom:2rem">
+    <div>
+      <h2>Propuestas</h2>
+      <p class="page-sub" style="margin:0">Edita, agrega y ajusta propuestas de campaña</p>
+    </div>
+    <button class="btn btn-orange" onclick="openPropModal()">+ Nueva propuesta</button>
+  </div>
+  <div id="prop-list"></div>
+</div>
+
+<!-- NOTAS -->
+<div class="tab" id="tab-notas">
+  <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:1rem;margin-bottom:2rem">
+    <div>
+      <h2>Ideas & Notas</h2>
+      <p class="page-sub" style="margin:0">Bloc de notas compartido del equipo · Ideas sueltas, cosas por confirmar, lo que sea</p>
+    </div>
+  </div>
+  
+  <div class="card" style="margin-bottom:1.5rem">
+    <div class="card-title"><span>✏️ Agregar idea</span></div>
+    <div class="form-row cols2">
+      <div><label>Etiqueta</label>
+        <select id="note-tag">
+          <option value="💡 Idea">💡 Idea</option>
+          <option value="❓ Por confirmar">❓ Por confirmar</option>
+          <option value="📱 Redes">📱 Redes</option>
+          <option value="🎨 Diseño">🎨 Diseño</option>
+          <option value="💰 Presupuesto">💰 Presupuesto</option>
+          <option value="⚠️ Urgente">⚠️ Urgente</option>
+        </select>
+      </div>
+      <div><label>Quién lo propone</label><input type="text" id="note-author" placeholder="Tu nombre"></div>
+    </div>
+    <div class="form-row">
+      <div><label>Nota / idea</label><textarea id="note-text" placeholder="Escribe tu idea aquí..." rows="3"></textarea></div>
+    </div>
+    <button class="btn btn-orange" onclick="addNote()">Guardar nota</button>
+  </div>
+  
+  <div id="notes-list"></div>
+</div>
+
+</div><!-- /main -->
+</div><!-- /app -->
+
+<!-- TASK MODAL -->
+<div class="modal-bg" id="taskModal" onclick="if(event.target===this)closeModal('taskModal')">
+  <div class="modal-box">
+    <div class="modal-title">Nueva tarea <button class="modal-close-btn" onclick="closeModal('taskModal')">×</button></div>
+    <div class="form-row">
+      <div><label>Nombre de la tarea</label><input type="text" id="t-name" placeholder="ej. Comprar paliacates naranjas"></div>
+    </div>
+    <div class="form-row cols2">
+      <div><label>Fecha</label><input type="text" id="t-date" placeholder="ej. 9 Mar"></div>
+      <div><label>Prioridad</label>
+        <select id="t-priority">
+          <option value="alta">🔴 Alta</option>
+          <option value="media" selected>🟡 Media</option>
+          <option value="baja">🟢 Baja</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div><label>Descripción (opcional)</label><textarea id="t-desc" placeholder="Detalles de la tarea..."></textarea></div>
+    </div>
+    <div class="form-row">
+      <div><label>Etiquetas (separadas por coma)</label><input type="text" id="t-chips" placeholder="ej. Compras, Activación, Urgente"></div>
+    </div>
+    <div style="display:flex;gap:0.8rem;justify-content:flex-end">
+      <button class="btn btn-ghost" onclick="closeModal('taskModal')">Cancelar</button>
+      <button class="btn btn-orange" onclick="addTask()">Agregar tarea</button>
+    </div>
+  </div>
+</div>
+
+<!-- BUDGET MODAL -->
+<div class="modal-bg" id="budgetModal" onclick="if(event.target===this)closeModal('budgetModal')">
+  <div class="modal-box">
+    <div class="modal-title">Nuevo gasto <button class="modal-close-btn" onclick="closeModal('budgetModal')">×</button></div>
+    <div class="form-row">
+      <div><label>Concepto</label><input type="text" id="b-name" placeholder="ej. Paliacates naranjas x7"></div>
+    </div>
+    <div class="form-row cols2">
+      <div><label>Monto estimado ($)</label><input type="number" id="b-amount" placeholder="280"></div>
+      <div><label>Fase</label>
+        <select id="b-phase">
+          <option>Fase 1 — Activación inicial</option>
+          <option>Fase 2 — Campaña continua</option>
+          <option>Fase 3 — Semana de planillas</option>
+          <option>Varios / Sin fase</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row cols2">
+      <div><label>Estado</label>
+        <select id="b-status">
+          <option value="pendiente">⏳ Pendiente</option>
+          <option value="pagado">✅ Pagado</option>
+          <option value="cotizando">🔍 Cotizando</option>
+          <option value="cancelado">❌ Cancelado</option>
+        </select>
+      </div>
+      <div><label>Responsable</label><input type="text" id="b-resp" placeholder="ej. Sofía"></div>
+    </div>
+    <div style="display:flex;gap:0.8rem;justify-content:flex-end">
+      <button class="btn btn-ghost" onclick="closeModal('budgetModal')">Cancelar</button>
+      <button class="btn btn-orange" onclick="addBudgetItem()">Agregar gasto</button>
+    </div>
+  </div>
+</div>
+
+<!-- PROPOSAL MODAL -->
+<div class="modal-bg" id="propModal" onclick="if(event.target===this)closeModal('propModal')">
+  <div class="modal-box">
+    <div class="modal-title">Nueva propuesta <button class="modal-close-btn" onclick="closeModal('propModal')">×</button></div>
+    <div class="form-row">
+      <div><label>Título de la propuesta</label><input type="text" id="p-name" placeholder="ej. Área de descanso exterior"></div>
+    </div>
+    <div class="form-row cols2">
+      <div><label>Icono (emoji)</label><input type="text" id="p-icon" placeholder="🛋️" maxlength="4"></div>
+      <div><label>Área</label>
+        <select id="p-area">
+          <option>Infraestructura</option>
+          <option>Impacto Social</option>
+          <option>Arte y Cultura</option>
+          <option>Athletics</option>
+          <option>E-Sports</option>
+          <option>Finanzas</option>
+          <option>Bienestar</option>
+          <option>General</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div><label>Descripción</label><textarea id="p-desc" placeholder="Explica la propuesta en 2-3 oraciones..."></textarea></div>
+    </div>
+    <div class="form-row">
+      <div><label>Viabilidad</label>
+        <select id="p-vib">
+          <option value="alta">🟢 Alta — lo hacemos nosotros</option>
+          <option value="media">🟡 Media — depende de Tecmilenio</option>
+          <option value="baja">🔴 Baja — idea a largo plazo</option>
+        </select>
+      </div>
+    </div>
+    <div style="display:flex;gap:0.8rem;justify-content:flex-end">
+      <button class="btn btn-ghost" onclick="closeModal('propModal')">Cancelar</button>
+      <button class="btn btn-orange" onclick="addProposal()">Guardar propuesta</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── STATE ───
+let tasks = [
+  {id:1,name:'Comprar paliacates naranjas',date:'7 Mar',desc:'x7 para el equipo. Entre $30-50 c/u.',chips:['Compras','Activación'],priority:'alta',done:false},
+  {id:2,name:'Cotizar camisas/playeras con logo',date:'7 Mar',desc:'Serigrafía simple o vinilo. Buscar imprenta en Torreón.',chips:['Compras'],priority:'alta',done:false},
+  {id:3,name:'Comprar botanas mini (Sabritas, Ruffles, Chetos)',date:'8 Mar',desc:'50-80 piezas para repartir el día de activación.',chips:['Compras','Activación'],priority:'alta',done:false},
+  {id:4,name:'Conseguir bomba de humo naranja',date:'8 Mar',desc:'2-3 piezas. Buscar en pirotecnia o TikTok Shop.',chips:['Activación'],priority:'alta',done:false},
+  {id:5,name:'Comprar naranjas + tajín + chamoy',date:'8 Mar',desc:'~50 naranjas para preparar el día de activación.',chips:['Compras','Activación'],priority:'media',done:false},
+  {id:6,name:'Subir primeros 3 posts del banner triple en Instagram',date:'2-5 Mar',desc:'Diseñar en Canva como 3240×1080 y cortar. Subir en orden.',chips:['Redes','Diseño'],priority:'alta',done:false},
+  {id:7,name:'Grabar video de activación + presentación equipo',date:'9 Mar',desc:'Clips individuales de cada integrante haciendo su rol + activación naranja.',chips:['Redes','Video'],priority:'alta',done:false},
+  {id:8,name:'Decorar baños del campus',date:'16 Mar',desc:'Guirnaldas, mensajes motivacionales, espejo. Baños de mujeres: toallas íntimas.',chips:['Campaña'],priority:'media',done:false},
+  {id:9,name:'TikTok trivia en pasillos',date:'23 Mar',desc:'Preguntar cosas de cultura general. El que acierta gana dulce. Grabar reacciones.',chips:['TikTok','Redes'],priority:'media',done:false},
+  {id:10,name:'Cotizar e imprimir lona para edificio',date:'25 Mar',desc:'1.5m x 3m aprox. Buscar imprenta local con instalación.',chips:['Diseño','Imprenta'],priority:'media',done:false},
+  {id:11,name:'Imprimir carteles y tarjetas de presentación',date:'28 Mar',desc:'50-80 carteles + 200 tarjetas "Vota por nosotros".',chips:['Imprenta'],priority:'media',done:false},
+  {id:12,name:'Contactar Papas Brothers para semana de planillas',date:'25 Mar',desc:'Cotizar el costo para el stand en la explanada semana del 6-10 Abr.',chips:['Semana Final'],priority:'media',done:false},
+  {id:13,name:'Buscar botarga de naranja para rentar',date:'28 Mar',desc:'Buscar en Torreón o Monterrey. Alternativa: disfraz naranja improvisado.',chips:['Semana Final'],priority:'baja',done:false},
+  {id:14,name:'Crear perfil de TikTok @naranjas2026',date:'7 Mar',desc:'Mismo usuario que Instagram para consistencia de marca.',chips:['Redes'],priority:'media',done:false},
+];
+
+let budget = [
+  {id:1,name:'Paliacates naranjas x7',amount:280,phase:'Fase 1 — Activación inicial',status:'pendiente',resp:'Abril'},
+  {id:2,name:'Camisas naranjas con logo x7',amount:1400,phase:'Fase 1 — Activación inicial',status:'cotizando',resp:'Sofía'},
+  {id:3,name:'Naranjas + tajín + chamoy',amount:300,phase:'Fase 1 — Activación inicial',status:'pendiente',resp:'Emiliano'},
+  {id:4,name:'Botanas mini (Sabritas, etc.)',amount:600,phase:'Fase 1 — Activación inicial',status:'pendiente',resp:''},
+  {id:5,name:'Bomba de humo naranja x2',amount:300,phase:'Fase 1 — Activación inicial',status:'cotizando',resp:''},
+  {id:6,name:'Pintura facial naranja no-tóxica',amount:130,phase:'Fase 1 — Activación inicial',status:'pendiente',resp:''},
+  {id:7,name:'Lona grande para edificio',amount:550,phase:'Fase 2 — Campaña continua',status:'cotizando',resp:'Sofía'},
+  {id:8,name:'Carteles impresos (50-80 pzas)',amount:400,phase:'Fase 2 — Campaña continua',status:'pendiente',resp:''},
+  {id:9,name:'Tarjetas de presentación (200 pzas)',amount:250,phase:'Fase 2 — Campaña continua',status:'pendiente',resp:''},
+  {id:10,name:'Dulces para repartir en corredores',amount:500,phase:'Fase 2 — Campaña continua',status:'pendiente',resp:''},
+  {id:11,name:'Decoración de baños',amount:300,phase:'Fase 2 — Campaña continua',status:'pendiente',resp:''},
+  {id:12,name:'Toallas íntimas para baños de mujeres',amount:160,phase:'Fase 2 — Campaña continua',status:'pendiente',resp:''},
+  {id:13,name:'Carrito Papas Brothers (1 día)',amount:1000,phase:'Fase 3 — Semana de planillas',status:'cotizando',resp:'Sofía'},
+  {id:14,name:'Botarga de naranja (renta)',amount:500,phase:'Fase 3 — Semana de planillas',status:'pendiente',resp:''},
+  {id:15,name:'Props naranja para stand',amount:400,phase:'Fase 3 — Semana de planillas',status:'pendiente',resp:''},
+];
+
+let proposals = [
+  {id:1,icon:'🛋️',name:'Zona Lounge al Aire Libre',area:'Infraestructura',desc:'Gestionar con la dirección la instalación de mobiliario exterior — puffs, sillones, sombra. Llevamos la iniciativa con firmas de la comunidad como evidencia de demanda.',vib:'media'},
+  {id:2,icon:'🎮',name:'Liga de E-Sports Inter-Carrera',area:'E-Sports',desc:'Torneo oficial entre carreras de los juegos más jugados del campus — Valorant, EA FC, Mario Kart. Brackets, transmisiones y premios reales.',vib:'alta'},
+  {id:3,icon:'🎤',name:'Open Mic & Feria de Talentos',area:'Arte y Cultura',desc:'Evento semestral en la explanada donde músicos, bailarines, comediantes y artistas tienen escenario real. Dante lo coordina.',vib:'alta'},
+  {id:4,icon:'🛍️',name:'Bazar Naranja Mensual',area:'Impacto Social',desc:'Una vez al mes, stands en el campus para emprendedores estudiantiles. Aplicación abierta a todos los alumnos. La FETECMI organiza.',vib:'alta'},
+  {id:5,icon:'🧘',name:'Semana Anti-Estrés en Parciales',area:'Bienestar',desc:'Durante semana de exámenes: coloring books, fruta, música, pláticas con psicólogos del campus. Emiliano lidera esto.',vib:'alta'},
+  {id:6,icon:'⚡',name:'Kit de Emergencia Estudiantil',area:'Impacto Social',desc:'Sistema de préstamo en la FETECMI: cargadores universales, calculadoras, USB, audifonos. Sin costo ni tramitología.',vib:'alta'},
+];
+
+let notes = [
+  {id:1,tag:'💡 Idea',author:'Abril',text:'Para el banner triple de Instagram hay que diseñar todo como una sola imagen de 3240x1080 y luego cortarla en 3 de 1080x1080. Canva deja hacer esto.',date:'Hoy'},
+  {id:2,tag:'❓ Por confirmar',author:'Paulina',text:'Confirmar con la coordinación VIVE el espacio para el stand en la explanada la semana del 6-10 de Abril. Preguntarle a [nombre del coordinador].',date:'Hoy'},
+];
+
+let nextId = 100;
+const statusColors = {pendiente:'#F4C430',pagado:'#5DD88A',cotizando:'#87ceeb',cancelado:'#ff6b6b'};
+const vibColors = {alta:'#5DD88A',media:'#F4C430',baja:'#ff6b6b'};
+const vibWidth = {alta:'88%',media:'58%',baja:'22%'};
+
+// ─── RENDER ───
+function renderAll(){renderTasks();renderBudget();renderProposals();renderNotes();updateResumen();updateStats();}
+
+function renderTasks(){
+  const el=document.getElementById('tasks-list');
+  if(!tasks.length){el.innerHTML='<p style="color:var(--muted);font-size:0.85rem">No hay tareas. ¡Agrega la primera!</p>';return;}
+  
+  const groups = {};
+  tasks.forEach(t=>{const g=t.date||'Sin fecha';if(!groups[g])groups[g]=[];groups[g].push(t);});
+  
+  let html='';
+  Object.keys(groups).forEach(date=>{
+    html+=`<div style="font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--o);margin:1.2rem 0 0.5rem;display:flex;align-items:center;gap:0.5rem">
+      ${date}<span style="flex:1;height:1px;background:rgba(255,98,0,0.15)"></span></div>`;
+    groups[date].forEach(t=>{
+      const pc={'alta':'p-alta','media':'p-media','baja':'p-baja'}[t.priority];
+      html+=`<div class="timeline-item${t.done?' done':''}" id="task-${t.id}">
+        <div class="timeline-header">
+          <div class="priority-dot ${pc}"></div>
+          <div class="tl-check${t.done?' checked':''}" onclick="toggleTask(${t.id})"></div>
+          <div class="tl-info">
+            <div class="tl-name" style="${t.done?'text-decoration:line-through;color:var(--muted)':''}">${t.name}</div>
+            ${t.desc?`<div class="tl-desc">${t.desc}</div>`:''}
+            ${t.chips&&t.chips.length?`<div class="tl-chips">${t.chips.map(c=>`<span class="chip">${c}</span>`).join('')}</div>`:''}
+          </div>
+          <button class="btn btn-ghost btn-sm" onclick="deleteTask(${t.id})" style="margin-left:0.5rem;flex-shrink:0;padding:0.25rem 0.5rem;font-size:0.7rem;color:#ff6b6b;border-color:rgba(255,107,107,0.2)">✕</button>
+        </div>
+      </div>`;
+    });
+  });
+  el.innerHTML=html;
+  document.getElementById('pendBadge').textContent=tasks.filter(t=>!t.done).length;
+}
+
+function renderBudget(){
+  const el=document.getElementById('budget-list');
+  if(!budget.length){el.innerHTML='<p style="color:var(--muted);font-size:0.85rem">Sin gastos registrados.</p>';return;}
+  
+  const phases={};
+  budget.forEach(b=>{if(!phases[b.phase])phases[b.phase]=[];phases[b.phase].push(b);});
+  
+  let html='';
+  let total=0,paid=0,pending=0;
+  
+  Object.keys(phases).forEach(phase=>{
+    html+=`<div style="font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--o);margin:1.2rem 0 0.5rem">${phase}</div>`;
+    phases[phase].forEach(b=>{
+      total+=b.amount;
+      if(b.status==='pagado')paid+=b.amount;
+      else if(b.status!=='cancelado')pending+=b.amount;
+      const sc=statusColors[b.status]||'#aaa';
+      html+=`<div class="budget-row">
+        <div>
+          <div class="budget-concept">${b.name}</div>
+          ${b.resp?`<div style="font-size:0.65rem;color:var(--muted);margin-top:2px">Responsable: ${b.resp}</div>`:''}
+        </div>
+        <div class="budget-amount">$${b.amount.toLocaleString()}</div>
+        <div>
+          <select onchange="updateBudgetStatus(${b.id},this.value)" style="font-size:0.72rem;padding:0.25rem 0.5rem;color:${sc}">
+            <option value="pendiente" ${b.status==='pendiente'?'selected':''}>⏳ Pendiente</option>
+            <option value="pagado" ${b.status==='pagado'?'selected':''}>✅ Pagado</option>
+            <option value="cotizando" ${b.status==='cotizando'?'selected':''}>🔍 Cotizando</option>
+            <option value="cancelado" ${b.status==='cancelado'?'selected':''}>❌ Cancelado</option>
+          </select>
+        </div>
+        <button class="btn btn-ghost btn-sm" onclick="deleteBudget(${b.id})" style="color:#ff6b6b;border-color:rgba(255,107,107,0.2)">✕</button>
+      </div>`;
+    });
+  });
+  el.innerHTML=html;
+  document.getElementById('budget-total').textContent='$'+total.toLocaleString();
+  document.getElementById('budget-breakdown').innerHTML=`✅ Pagado: $${paid.toLocaleString()} &nbsp;·&nbsp; ⏳ Pendiente: $${pending.toLocaleString()}`;
+  document.getElementById('stat-budget').textContent='$'+paid.toLocaleString();
+}
+
+function renderProposals(){
+  const el=document.getElementById('prop-list');
+  if(!proposals.length){el.innerHTML='<p style="color:var(--muted);font-size:0.85rem">Sin propuestas.</p>';return;}
+  el.innerHTML=proposals.map(p=>`
+    <div class="prop-item" id="prop-${p.id}">
+      <div class="prop-head" onclick="toggleProp(${p.id})">
+        <span style="font-size:1.4rem">${p.icon||'💡'}</span>
+        <div style="flex:1">
+          <div style="font-size:0.9rem;font-weight:600">${p.name}</div>
+          <div style="font-size:0.7rem;color:var(--muted)">${p.area}</div>
+        </div>
+        <span class="nav-badge" style="background:${vibColors[p.vib]};color:#000">${p.vib}</span>
+        <span class="prop-expand">▼</span>
+      </div>
+      <div class="prop-body">
+        <textarea onblur="updatePropDesc(${p.id},this.value)" style="margin-top:0.8rem">${p.desc}</textarea>
+        <div class="prop-vib">
+          <span style="font-size:0.7rem;color:var(--muted)">Viabilidad:</span>
+          <div class="vib-bar"><div class="vib-fill" style="width:${vibWidth[p.vib]};background:${vibColors[p.vib]}"></div></div>
+          <select onchange="updatePropVib(${p.id},this.value)" style="font-size:0.72rem;padding:0.2rem 0.5rem;width:auto">
+            <option value="alta" ${p.vib==='alta'?'selected':''}>🟢 Alta</option>
+            <option value="media" ${p.vib==='media'?'selected':''}>🟡 Media</option>
+            <option value="baja" ${p.vib==='baja'?'selected':''}>🔴 Baja</option>
+          </select>
+        </div>
+        <div style="margin-top:0.8rem"><button class="btn btn-danger btn-sm" onclick="deleteProp(${p.id})">Eliminar propuesta</button></div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderNotes(){
+  const el=document.getElementById('notes-list');
+  if(!notes.length){el.innerHTML='<p style="color:var(--muted);font-size:0.85rem">Sin notas aún.</p>';return;}
+  el.innerHTML=notes.slice().reverse().map(n=>`
+    <div class="note-item">
+      <div class="note-meta">
+        <span class="note-tag">${n.tag}</span>
+        <span>${n.author||'Equipo'}</span>
+        <span>${n.date||''}</span>
+      </div>
+      <div class="note-text">${n.text}</div>
+      <button class="note-del" onclick="deleteNote(${n.id})">✕</button>
+    </div>
+  `).join('');
+  // update resumen
+  const rn=document.getElementById('resumen-notas');
+  if(rn){rn.innerHTML=notes.slice(-3).reverse().map(n=>`<div style="padding:0.6rem 0;border-bottom:1px solid var(--border2);font-size:0.82rem"><span class="note-tag">${n.tag}</span> <strong>${n.author}</strong>: ${n.text.substring(0,80)}${n.text.length>80?'...':''}</div>`).join('')||'<p style="color:var(--muted)">Sin notas aún.</p>';}
+}
+
+function updateStats(){
+  document.getElementById('stat-done').textContent=tasks.filter(t=>t.done).length;
+  document.getElementById('stat-pend').textContent=tasks.filter(t=>!t.done).length;
+  const voteDate=new Date('2026-04-06');
+  const diff=Math.ceil((voteDate-new Date())/(1000*60*60*24));
+  document.getElementById('stat-days').textContent=diff>0?diff:'¡Ya!';
+}
+
+function updateResumen(){
+  const upcoming=tasks.filter(t=>!t.done).slice(0,5);
+  const el=document.getElementById('resumen-proximas');
+  if(!el)return;
+  el.innerHTML=upcoming.length?upcoming.map(t=>`
+    <div style="display:flex;align-items:center;gap:0.8rem;padding:0.6rem 0;border-bottom:1px solid var(--border2)">
+      <div class="priority-dot ${{alta:'p-alta',media:'p-media',baja:'p-baja'}[t.priority]}"></div>
+      <div style="flex:1;font-size:0.85rem">${t.name}</div>
+      <div style="font-size:0.72rem;color:var(--o)">${t.date}</div>
+    </div>
+  `).join(''):'<p style="color:var(--muted);font-size:0.82rem">¡Todo completado! 🎉</p>';
+}
+
+// ─── ACTIONS ───
+function showTab(id,el){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  el.classList.add('active');
+}
+
+function openTaskModal(){document.getElementById('taskModal').classList.add('open');}
+function openBudgetModal(){document.getElementById('budgetModal').classList.add('open');}
+function openPropModal(){document.getElementById('propModal').classList.add('open');}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+
+function addTask(){
+  const name=document.getElementById('t-name').value.trim();
+  if(!name)return alert('Agrega el nombre de la tarea');
+  tasks.push({
+    id:nextId++,
+    name,
+    date:document.getElementById('t-date').value||'Sin fecha',
+    desc:document.getElementById('t-desc').value,
+    chips:document.getElementById('t-chips').value.split(',').map(s=>s.trim()).filter(Boolean),
+    priority:document.getElementById('t-priority').value,
+    done:false
+  });
+  document.getElementById('t-name').value='';
+  document.getElementById('t-date').value='';
+  document.getElementById('t-desc').value='';
+  document.getElementById('t-chips').value='';
+  closeModal('taskModal');
+  renderAll();
+}
+
+function toggleTask(id){
+  const t=tasks.find(t=>t.id===id);
+  if(t)t.done=!t.done;
+  renderAll();
+}
+
+function deleteTask(id){tasks=tasks.filter(t=>t.id!==id);renderAll();}
+
+function addBudgetItem(){
+  const name=document.getElementById('b-name').value.trim();
+  const amount=parseFloat(document.getElementById('b-amount').value)||0;
+  if(!name)return alert('Agrega el concepto');
+  budget.push({
+    id:nextId++,
+    name,amount,
+    phase:document.getElementById('b-phase').value,
+    status:document.getElementById('b-status').value,
+    resp:document.getElementById('b-resp').value,
+  });
+  document.getElementById('b-name').value='';
+  document.getElementById('b-amount').value='';
+  document.getElementById('b-resp').value='';
+  closeModal('budgetModal');
+  renderBudget();
+}
+
+function updateBudgetStatus(id,val){const b=budget.find(b=>b.id===id);if(b)b.status=val;renderBudget();}
+function deleteBudget(id){budget=budget.filter(b=>b.id!==id);renderBudget();}
+
+function addProposal(){
+  const name=document.getElementById('p-name').value.trim();
+  if(!name)return alert('Agrega el nombre');
+  proposals.push({
+    id:nextId++,
+    icon:document.getElementById('p-icon').value||'💡',
+    name,
+    area:document.getElementById('p-area').value,
+    desc:document.getElementById('p-desc').value,
+    vib:document.getElementById('p-vib').value,
+  });
+  document.getElementById('p-name').value='';
+  document.getElementById('p-icon').value='';
+  document.getElementById('p-desc').value='';
+  closeModal('propModal');
+  renderProposals();
+}
+
+function toggleProp(id){document.getElementById('prop-'+id).classList.toggle('expanded');}
+function updatePropDesc(id,val){const p=proposals.find(p=>p.id===id);if(p)p.desc=val;}
+function updatePropVib(id,val){const p=proposals.find(p=>p.id===id);if(p){p.vib=val;renderProposals();}}
+function deleteProp(id){proposals=proposals.filter(p=>p.id!==id);renderProposals();}
+
+function addNote(){
+  const text=document.getElementById('note-text').value.trim();
+  if(!text)return alert('Escribe algo primero');
+  notes.push({
+    id:nextId++,
+    tag:document.getElementById('note-tag').value,
+    author:document.getElementById('note-author').value||'Equipo',
+    text,
+    date:'Ahora'
+  });
+  document.getElementById('note-text').value='';
+  renderNotes();
+}
+
+function deleteNote(id){notes=notes.filter(n=>n.id!==id);renderNotes();}
+
+// INIT
+renderAll();
+</script>
+</body>
+</html>
